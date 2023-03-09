@@ -1,0 +1,52 @@
+{% extends "aggry_app/base.html" %}
+{% block content %}
+{% load static %}
+
+<h1 class="title">求人一覧</h1>
+<hr>
+
+<p class="subtitle">該当求人：{{ jobs|length }}件</p>
+
+{% for obj in page_obj %}
+<div style = "width:600px; margin:auto; margin-bottom:50px; padding:30px; box-shadow: 15px 16px 47px -15px #464a7c; border-radius: 31px;">
+    <h2 class="subtitle">{{obj.title}}</h2>
+    <table  class="table is-bordered is-hoverable is-fullwidth" style="margin-bottom: 20px">
+      <tbody>
+        <tr>
+          <th style="padding: 10px 20px; background-color: silver;">職種</th>
+          <td style="padding: 10px 20px;">{{obj.job}}</td>
+        </tr>
+        <tr>
+          <th style="padding: 10px 20px; background-color: silver;">勤務地</th>
+          <td style="padding: 10px 20px;">{{obj.location}}</td>
+        </tr>
+        <tr>
+          <th style="padding: 10px 20px; background-color: silver;">会社名</th>
+          <td style="padding: 10px 20px;">{{obj.agent}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <small>Posted at {{obj.data_added}}</small>
+    <p><a href="{% url 'aggry_app:job_detail' obj.id %}">詳細を見る</a></p>
+    <br>
+</div>
+{% endfor %}
+
+<div class="pagination" style="margin:auto; width: 600px;">
+  {% if page_obj.has_previous %}
+  <a href="?job={{job}}&location={{location}}&page={{ page_obj.previous_page_number }}" style="font-size: 50px;">&#9664;</a>
+  {% else %}
+  <p style="font-size: 50px;">&#9665;</p>
+  {% endif %}
+  <span class="current-page" style="font-size: 30px;">{{ page_obj.number }}</span>
+
+  {% if page_obj.has_next %}
+  <a href="?job={{job}}&location={{location}}&page={{ page_obj.next_page_number }}" style="font-size: 50px;">&#9654;</a>
+  {% else %}
+  <p style="font-size: 50px;">&#9655;</p>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+

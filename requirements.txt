@@ -1,0 +1,7 @@
+apscheduler==3.10.0
+janome
+pandas
+scikit-learn
+scipy
+geopy
+django-widget-tweaks
