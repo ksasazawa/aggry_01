@@ -9,7 +9,6 @@ from .models import Jobs
 from .forms import JobSearchForm
 from django.core.paginator import Paginator
 
-# Create your views here.
  
    
 def frontpage(request):
@@ -29,10 +28,23 @@ def frontpage(request):
 
 
 def home(request):
+    # 職種と勤務地で絞ったデータを取得
     jobs = Jobs.objects.filter(job=request.GET.get('job'), mod_location=request.GET.get('location')).all()
-    paginator = Paginator(jobs, 20)
+    
+    # label1のパターンを作り、そのパターンと一致したら順にjob_2dに格納
+    patterns = Jobs.objects.values_list('label1', flat=True).distinct().order_by('label1') # label1のパターン
+    jobs_2d = [[] for _ in range(len(patterns))] # 空の二次元リストを作成
+    for i, pattern in enumerate(patterns): # label1のパターンごとに一致するものを二次元リストに格納
+        for job in jobs:
+            if job.label1 == pattern:
+                jobs_2d[i].append(job)
+    jobs_2d = [x for x in jobs_2d if x]
+    
+    # 20求人ずつにページ分割
+    paginator = Paginator(jobs_2d, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    
     return render(request, 'aggry_app/home.html', context = {
         "jobs": jobs,
         "page_obj": page_obj,
@@ -40,6 +52,7 @@ def home(request):
         "job": request.GET.get('job'),
         "location": request.GET.get('location'),
     })
+
 
 def job_detail(request, id):
     job = Jobs.objects.get(id=id)

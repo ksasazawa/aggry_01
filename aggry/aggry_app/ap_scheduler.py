@@ -32,5 +32,5 @@ def periodic_execution():
 # スケジュールの設定
 def start():
     scheduler=BackgroundScheduler()
-    scheduler.add_job(periodic_execution, 'cron', hour=21, minute=49)
+    scheduler.add_job(periodic_execution, 'cron', hour=23, minute=12)
     scheduler.start()
