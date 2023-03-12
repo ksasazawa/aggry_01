@@ -1,6 +1,6 @@
 # Aggggry　〜派遣求人特化の2✖️アグリゲーションサイト〜
 
-![title image](./images/aggggry.png)
+![title image](./images/aggggry2.png)
 
 ## 概要
 施工管理の派遣求人主要サイトから求人情報をクローリングし、類似求人をグルーピング表示。
