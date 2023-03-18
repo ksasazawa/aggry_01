@@ -4,4 +4,6 @@ pandas
 scikit-learn
 scipy
 geopy
+django
+scrapy 
 django-widget-tweaks

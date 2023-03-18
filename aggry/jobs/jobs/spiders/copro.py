@@ -7,11 +7,21 @@ import datetime
 class GenCareeSpider(scrapy.Spider):
     name = "copro"
     allowed_domains = ["g-career.net"]
-    start_urls = ["https://www.g-career.net/jobs/list?employment%5B%5D=1&parent_area%5B%5D=436&prefecture_area%5B%5D=013&occupation%5B%5D=2&keyword=%E6%9D%B1%E4%BA%AC"]
+    start_urls = ["https://www.g-career.net/jobs/list?employment%5B%5D=1&parent_area%5B%5D=436&prefecture_area%5B%5D=013&occupation%5B%5D=2&keyword=%E6%9D%B1%E4%BA%AC",
+                  "https://www.g-career.net/jobs/list?employment%5B%5D=1&parent_area%5B%5D=436&prefecture_area%5B%5D=013&occupation%5B%5D=7&keyword=%E6%9D%B1%E4%BA%AC",]
+    # "https://www.g-career.net/jobs/list?employment%5B%5D=1&parent_area%5B%5D=436&prefecture_area%5B%5D=013&occupation%5B%5D=12&occupation%5B%5D=17&keyword=%E6%9D%B1%E4%BA%AC"
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url=url, callback=self.parse)
 
     def parse_item(self, response):
         loader = ItemLoader(item=Jobs(), response=response)
         loader.add_css('title', 'h1.mainTtl::text')
+        if response.css('dl.jobInfo>div:nth-child(2)>dd::text').get() in ('空調衛生設備施工管理', '電気施工管理'):
+            loader.add_value('job', "設備施工管理")
+        else:
+            loader.add_css('job', 'dl.jobInfo>div:nth-child(2)>dd::text')
         loader.add_css('job', 'dl.jobInfo>div:nth-child(2)>dd::text')
         loader.add_css('location', 'dl.jobInfo>div:nth-child(1)>dd::text')
         loader.add_css('price', 'dl.jobInfo>div:nth-child(3)>dd::text')

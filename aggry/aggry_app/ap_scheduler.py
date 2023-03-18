@@ -24,13 +24,22 @@ import subprocess
 
 def periodic_execution():
     os.chdir('jobs')
-    subprocess.Popen(['scrapy', 'crawl', 'conma'])
-    subprocess.Popen(['scrapy', 'crawl', 'oreyume'])
-    subprocess.Popen(['scrapy', 'crawl', 'copro'])
+    
+    spider_process1 = subprocess.Popen(['scrapy', 'crawl', 'conma'])
+    spider_process1.wait()
+    
+    spider_process2 = subprocess.Popen(['scrapy', 'crawl', 'oreyume'])
+    spider_process2.wait()
+    
+    spider_process3 = subprocess.Popen(['scrapy', 'crawl', 'copro'])
+    spider_process3.wait()
+    
     os.chdir('../')
+    subprocess.Popen(['python', 'clustering.py'])
+
 
 # スケジュールの設定
 def start():
     scheduler=BackgroundScheduler()
-    scheduler.add_job(periodic_execution, 'cron', hour=23, minute=12)
+    scheduler.add_job(periodic_execution, 'cron', hour=18, minute=3)
     scheduler.start()

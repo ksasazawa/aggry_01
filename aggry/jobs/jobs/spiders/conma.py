@@ -7,7 +7,12 @@ import datetime
 class ConmaSpider(scrapy.Spider):
     name = "conma"
     allowed_domains = ["conma.jp"]
-    start_urls = ["https://conma.jp/zenkoku/PC13/MC1"]
+    start_urls = ["https://conma.jp/zenkoku/PC13/MC1", "https://conma.jp/zenkoku/PC13/MC2"]
+    # "https://conma.jp/zenkoku/PC13/MC5,6"
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url=url, callback=self.parse)
 
     def parse_item(self, response):
         rows = response.css("table#w0 tr")
@@ -22,7 +27,14 @@ class ConmaSpider(scrapy.Spider):
                 detail_no = i+1
         loader = ItemLoader(item=Jobs(), response=response)
         loader.add_css('title', 'h1.resultTitle::text')
-        loader.add_css('job', f'table#w0 tr:nth-child({job_no})>td::text')
+        if "電気" in response.css(f'table#w0 tr:nth-child({job_no})>td::text').get() or "設備" in response.css(f'table#w0 tr:nth-child({job_no})>td::text').get():
+            # hensu = response.css(f'table#w0 tr:nth-child({job_no})>td::text').get()
+            # print(f"職種はifで{hensu}")
+            loader.add_value('job', "設備施工管理")
+        else:
+            # hensu = response.css(f'table#w0 tr:nth-child({job_no})>td::text').get()
+            # print(f"職種はelseで{hensu}")
+            loader.add_css('job', f'table#w0 tr:nth-child({job_no})>td::text')
         loader.add_css('location', f'table#w0 tr:nth-child({location_no})>td::text')
         loader.add_css('price', f'table#w0 tr:nth-child({price_no})>td::text')
         

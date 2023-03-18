@@ -6,6 +6,8 @@
 <h2 class="title">求人検索ホーム</h2>
 <hr>
 
+<p class="subtitle">求人数：{{ jobs|length }}件</p>
+
 <div class="has-text-centered">
     <form action="." method="post">
         {% csrf_token %}

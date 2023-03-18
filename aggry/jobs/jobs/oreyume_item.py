@@ -5,7 +5,8 @@ from itemloaders.processors import TakeFirst, MapCompose, Join
 def extract_job(element):
     target = '/'
     idx = element.find(target)
-    return element[:idx] 
+    element = element[:idx].replace('空調', '').replace('給排水', '')
+    return element
 
 class Jobs(scrapy.Item):
     title = scrapy.Field(

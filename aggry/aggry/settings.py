@@ -22,7 +22,7 @@ print(f'DEBUG:{DEBUG}')
 
 ALLOWED_HOSTS = ["*"]
 
-replit_appname = "aggggry"
+replit_appname = "aggry"
 replit_username = "kentasasazawa"
 CSRF_TRUSTED_ORIGINS = [
   'https://'+replit_appname+'.'+replit_username+'.repl.co',
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'aggry_app',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

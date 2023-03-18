@@ -7,10 +7,15 @@ import datetime
 class OreyumeSpider(scrapy.Spider):
     name = "oreyume"
     allowed_domains = ["oreyume.com"]
-    start_urls = ["https://www.oreyume.com/search/JB63/JS21057/PC13/EC33/"]
+    start_urls = ["https://www.oreyume.com/search/JB63/JS21057/PC13/EC33/", "https://www.oreyume.com/search/JB63/JS21058/PC13/EC33/"]
+    # "https://www.oreyume.com/search/JB63/JS21093/PC13/EC33/", "https://www.oreyume.com/search/JB63/JS21095/PC13/EC33/"
     
     def __init__(self):
         self.page_cnt = 1
+        
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url=url, callback=self.parse)
 
     def parse_item(self, response):
         rows = response.css("div#unker02>table tr")

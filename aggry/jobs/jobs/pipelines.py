@@ -98,67 +98,7 @@ class JobsPipeline:
 
 
 
-    # クラスタリングしてlabel1を更新
-    def close_spider(self, spider):
-
-        # IDのリストとタイトルのリストを作成
-        self.c.execute('''
-                    SELECT id, title FROM aggry_app_jobs
-                        ''')
-        result = self.c.fetchall()
-        result = [list(r) for r in result] # タプルをリストに変換
-        input_strings = []
-        input_ids = []
-        for r in result:
-            r[1] = r[1].strip().replace('/', '').replace('|', '').replace('【ConMa(コンマ)】', '') # 機械学習用にタイトルを整形
-            input_strings.append(r[1])
-            input_ids.append(r[0])
-
-        # 各文字列をUnicode正規化して、janomeでわかちがきにする
-        tokenizer = Tokenizer() # janomeトークナイザーの初期化
-        tokenized_strings = []
-        for string in input_strings:
-            # Unicode正規化
-            normalized_string = unicodedata.normalize("NFKC", string)
-            # janomeでわかちがきにする
-            tokens = tokenizer.tokenize(normalized_string)
-            tokenized_strings.append([token.surface for token in tokens])
-
-        # 単語リストを作成
-        words = set()
-        for string in tokenized_strings:
-            for token in string:
-                words.add(token)
-        word_list = list(words)
-        word_list.sort()
-
-        # データ行列を作成
-        data_matrix = lil_matrix((len(input_strings), len(word_list)), dtype=np.int32)
-        for i, string in enumerate(tokenized_strings):
-            for token in string:
-                j = word_list.index(token)
-                data_matrix[i, j] += 1
-
-        # DBSCANクラスタリングを実行
-        dbscan = DBSCAN(eps=1.5, min_samples=2) # ep=1.5~3が良い？。1.5だと150個くらいに分割される。
-        dbscan.fit(data_matrix.toarray())
-
-        # ID,タイトル、ラベルを格納したリストを作成
-        labeling_list = []
-        for i, label in enumerate(dbscan.labels_):
-            labeling_list.append([input_ids[i], input_strings[i], label])
-
-        # １レコードずつラベルを入れる
-        for l in labeling_list:            
-            # プレースホルダーを使ったSQL文を作成する
-            sql = "update aggry_app_jobs set label1 = ? where id = ?"
-            # プレースホルダーに渡す変数をタプルで指定する
-            params = (int(l[2]),l[0])
-            # SQL文を実行する
-            self.c.execute(sql, params)
-            
-            self.connection.commit()        
-        
+    def close_spider(self, spider):       
         self.connection.close()
         
         

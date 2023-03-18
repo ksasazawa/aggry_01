@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.db.models import Q
 from urllib.parse import urlencode
 import os
 import datetime
@@ -12,6 +13,7 @@ from django.core.paginator import Paginator
  
    
 def frontpage(request):
+    jobs = Jobs.objects.filter(Q(job='建築施工管理') | Q(job='土木施工管理') | Q(job='設備施工管理')).all()
     if request.method == "POST":
         form = JobSearchForm(request.POST)
         if form.is_valid():            
@@ -24,7 +26,10 @@ def frontpage(request):
             return redirect(url)
     else:
         form = JobSearchForm()       
-    return render(request, "aggry_app/frontpage.html", {"form": form})
+    return render(request, "aggry_app/frontpage.html", context = {
+        "form": form,
+        "jobs": jobs,
+        })
 
 
 def home(request):
@@ -59,3 +64,11 @@ def job_detail(request, id):
     return render(request, "aggry_app/job_detail.html", context = {
         "job": job
         })
+    
+def test(request):
+    jobs = Jobs.objects.all()
+    # patterns = Jobs.objects.filter(agent="株式会社コプロ・エンジニアード").values_list('job', flat=True).distinct().order_by('job')
+    # print(patterns)
+    return render(request, "aggry_app/test.html", context = {
+        "jobs": jobs,
+    })
