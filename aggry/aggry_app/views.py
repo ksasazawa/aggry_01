@@ -37,11 +37,12 @@ def home(request):
     jobs = Jobs.objects.filter(job=request.GET.get('job'), mod_location=request.GET.get('location')).all()
     
     # label1のパターンを作り、そのパターンと一致したら順にjob_2dに格納
-    patterns = Jobs.objects.values_list('label1', flat=True).distinct().order_by('label1') # label1のパターン
+    patterns = Jobs.objects.values_list('label1', flat=True).distinct().order_by('label1').reverse() # label1のパターン
     jobs_2d = [[] for _ in range(len(patterns))] # 空の二次元リストを作成
     for i, pattern in enumerate(patterns): # label1のパターンごとに一致するものを二次元リストに格納
         for job in jobs:
             if job.label1 == pattern:
+                job.mod_detail = job.detail.replace(' ', '<br>').replace('　', '<br>').replace('\n', '<br>') # クリックされたら右側に表示する用の仕事内容
                 jobs_2d[i].append(job)
     jobs_2d = [x for x in jobs_2d if x]
     
